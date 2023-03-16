@@ -2,6 +2,7 @@
   "name": "personal-finance-app",
   "version": "1.0.0",
   "description": "Personal finance app",
+  "type": "commonjs",
   "main": "server.ts",
   "scripts": {
     "build": "npx tsc",

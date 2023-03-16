@@ -1,11 +1,11 @@
-import express, { Request, Response, NextFunction } from "express";
+import express from "express";
+
+import categoriesRoute from "./api/routes/categories";
+import expensesRoute from "./api/routes/expenses";
 
 const app = express();
 
-app.use((req: Request, res: Response, next: NextFunction) => {
-  res.status(200).json({
-    message: "it works",
-  });
-});
+app.use("/categories", categoriesRoute);
+app.use("/expenses", expensesRoute);
 
 export default app;
