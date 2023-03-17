@@ -8,8 +8,12 @@ router.get("/", (req, res, next) => {
     });
 });
 router.post("/", (req, res, next) => {
+    const category = {
+        name: req.body.name,
+    };
     res.status(200).json({
         message: "Handling POST reques to /categories",
+        createdCategory: category,
     });
 });
 router.get("/:categoriesId", (req, res, next) => {

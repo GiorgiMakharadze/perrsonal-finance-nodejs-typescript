@@ -6,13 +6,19 @@ const router = Router();
 //Handle incoming GET requests to /expenses
 router.get("/", (req: Request, res: Response, next: NextFunction) => {
   res.status(200).json({
-    message: "Handling GET request to /expenses",
+    message: "Expenses where fetched",
   });
 });
 
 router.post("/", (req: Request, res: Response, next: NextFunction) => {
-  res.status(200).json({
-    message: "Handling POST request to /expenses",
+  const expenses = {
+    expensesId: req.body.expensesId,
+    description: req.body.description,
+    status: req.body.status,
+  };
+  res.status(201).json({
+    message: "Expenses where created",
+    expenses: expenses,
   });
 });
 

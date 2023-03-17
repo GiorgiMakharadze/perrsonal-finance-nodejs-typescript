@@ -10,8 +10,12 @@ router.get("/", (req: Request, res: Response, next: NextFunction) => {
 });
 
 router.post("/", (req: Request, res: Response, next: NextFunction) => {
+  const category = {
+    name: req.body.name,
+  };
   res.status(200).json({
     message: "Handling POST reques to /categories",
+    createdCategory: category,
   });
 });
 
