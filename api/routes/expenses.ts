@@ -3,6 +3,7 @@ import { Router } from "express";
 
 const router = Router();
 
+//Handle incoming GET requests to /expenses
 router.get("/", (req: Request, res: Response, next: NextFunction) => {
   res.status(200).json({
     message: "Handling GET request to /expenses",

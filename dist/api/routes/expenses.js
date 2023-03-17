@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const router = (0, express_1.Router)();
+//Handle incoming GET requests to /expenses
 router.get("/", (req, res, next) => {
     res.status(200).json({
         message: "Handling GET request to /expenses",
