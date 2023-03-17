@@ -3,14 +3,33 @@ import httpErrors from "http-errors";
 import bodyParser from "body-parser";
 import morgan from "morgan";
 
+import mongoose, { ConnectOptions } from "mongoose";
+
 import categoriesRoute from "./api/routes/categories";
 import expensesRoute from "./api/routes/expenses";
 
+//Connecting to MongoDb
+if (!process.env.MONGO_ATLAS) {
+  throw new Error("MONGO_ATLAS environment variable is not defined");
+}
+mongoose
+  .connect(process.env.MONGO_ATLAS, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  } as ConnectOptions)
+  .then(() => {
+    console.log("MongoDB Connected!");
+  })
+  .catch((error) => {
+    console.log("Error connecting to MongoDB:", error.message);
+  });
+
+//Express
 const app = express();
 
 //Middleware for logging request details
 app.use(morgan("dev"));
-// Middleware for parsing body & JSON requests".
+//Middleware for parsing body & JSON requests".
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 

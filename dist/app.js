@@ -7,12 +7,29 @@ const express_1 = __importDefault(require("express"));
 const http_errors_1 = __importDefault(require("http-errors"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const morgan_1 = __importDefault(require("morgan"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const categories_1 = __importDefault(require("./api/routes/categories"));
 const expenses_1 = __importDefault(require("./api/routes/expenses"));
+//Connecting to MongoDb
+if (!process.env.MONGO_ATLAS) {
+    throw new Error("MONGO_ATLAS environment variable is not defined");
+}
+mongoose_1.default
+    .connect(process.env.MONGO_ATLAS, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+})
+    .then(() => {
+    console.log("MongoDB Connected!");
+})
+    .catch((error) => {
+    console.log("Error connecting to MongoDB:", error.message);
+});
+//Express
 const app = (0, express_1.default)();
 //Middleware for logging request details
 app.use((0, morgan_1.default)("dev"));
-// Middleware for parsing body & JSON requests".
+//Middleware for parsing body & JSON requests".
 app.use(body_parser_1.default.urlencoded({ extended: false }));
 app.use(body_parser_1.default.json());
 //CORS
