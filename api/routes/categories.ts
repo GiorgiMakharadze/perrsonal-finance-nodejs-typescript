@@ -7,15 +7,24 @@ import Category from "../models/categories";
 const router = Router();
 
 router.get("/", (req: Request, res: Response, next: NextFunction) => {
-  res.status(200).json({
-    message: "Handling GET reques to /categories",
-  });
+  Category.find()
+    .exec()
+    .then((docs) => {
+      console.log(docs);
+      res.status(200).json(docs);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
 });
 
 router.post("/", (req: Request, res: Response, next: NextFunction) => {
   const category = new Category({
     _id: new mongoose.Types.ObjectId(),
-    name: req.body.name,
+    category: req.body.category,
   });
   category
     .save()
@@ -66,18 +75,37 @@ router.get(
 router.patch(
   "/:categoriesId",
   (req: Request, res: Response, next: NextFunction) => {
-    res.status(200).json({
-      message: "upated category",
-    });
+    const id = req.params.categoriesId;
+    const updateOps: { [key: string]: string } = {};
+    for (const ops of req.body) {
+      updateOps[ops.propName] = ops.value;
+    }
+    Category.updateOne({ _id: id }, { $set: updateOps })
+      .exec()
+      .then((result) => {
+        console.log(result);
+        res.status(200).json(result);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({ error: err });
+      });
   }
 );
 
 router.delete(
   "/:categoriesId",
   (req: Request, res: Response, next: NextFunction) => {
-    res.status(200).json({
-      message: "deleted category",
-    });
+    const id = req.params.categoriesId;
+    Category.findByIdAndRemove({ _id: id })
+      .exec()
+      .then((result) => {
+        res.status(200).json(result);
+      })
+      .catch((err) => {
+        console.log(err);
+        error: err;
+      });
   }
 );
 

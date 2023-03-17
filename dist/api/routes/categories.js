@@ -8,14 +8,23 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const categories_1 = __importDefault(require("../models/categories"));
 const router = (0, express_1.Router)();
 router.get("/", (req, res, next) => {
-    res.status(200).json({
-        message: "Handling GET reques to /categories",
+    categories_1.default.find()
+        .exec()
+        .then((docs) => {
+        console.log(docs);
+        res.status(200).json(docs);
+    })
+        .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+            error: err,
+        });
     });
 });
 router.post("/", (req, res, next) => {
     const category = new categories_1.default({
         _id: new mongoose_1.default.Types.ObjectId(),
-        name: req.body.name,
+        category: req.body.category,
     });
     category
         .save()
@@ -61,13 +70,32 @@ router.get("/:categoriesId", (req, res, next) => {
     });
 });
 router.patch("/:categoriesId", (req, res, next) => {
-    res.status(200).json({
-        message: "upated category",
+    const id = req.params.categoriesId;
+    const updateOps = {};
+    for (const ops of req.body) {
+        updateOps[ops.propName] = ops.value;
+    }
+    categories_1.default.updateOne({ _id: id }, { $set: updateOps })
+        .exec()
+        .then((result) => {
+        console.log(result);
+        res.status(200).json(result);
+    })
+        .catch((err) => {
+        console.log(err);
+        res.status(500).json({ error: err });
     });
 });
 router.delete("/:categoriesId", (req, res, next) => {
-    res.status(200).json({
-        message: "deleted category",
+    const id = req.params.categoriesId;
+    categories_1.default.findByIdAndRemove({ _id: id })
+        .exec()
+        .then((result) => {
+        res.status(200).json(result);
+    })
+        .catch((err) => {
+        console.log(err);
+        error: err;
     });
 });
 exports.default = router;

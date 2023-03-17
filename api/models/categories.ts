@@ -1,22 +1,21 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface ICategory extends Document {
-  name: string;
-  defaultCategory: boolean;
+  category: string;
+  default: string;
 }
 
 const categoriesSchema: Schema = new Schema({
   _id: mongoose.Schema.Types.ObjectId,
-  name: {
+  category: {
     type: String,
     required: true,
     unique: true,
   },
-  defaultCategory: {
-    type: Boolean,
-    required: true,
-    default: false,
-  },
+  // type: {
+  //   type: String,
+  //   default: "default",
+  // },
 });
 
 export default mongoose.model<ICategory>("Category", categoriesSchema);
