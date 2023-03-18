@@ -31,7 +31,7 @@ router.post("/", (req: Request, res: Response, next: NextFunction) => {
     .then((result) => {
       console.log(result);
       res.status(201).json({
-        message: "Handling POST reques to /categories",
+        message: "Handling POST request to /categories",
         createdCategory: result,
       });
     })
@@ -76,11 +76,7 @@ router.patch(
   "/:categoriesId",
   (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.categoriesId;
-    const updateOps: { [key: string]: string } = {};
-    for (const ops of req.body) {
-      updateOps[ops.propName] = ops.value;
-    }
-    Category.updateOne({ _id: id }, { $set: updateOps })
+    Category.updateOne({ _id: id }, { $set: { category: req.body.category } })
       .exec()
       .then((result) => {
         console.log(result);
@@ -88,7 +84,9 @@ router.patch(
       })
       .catch((err) => {
         console.log(err);
-        res.status(500).json({ error: err });
+        res.status(500).json({
+          error: err,
+        });
       });
   }
 );
@@ -104,7 +102,7 @@ router.delete(
       })
       .catch((err) => {
         console.log(err);
-        error: err;
+        res.status(500).json({ error: err });
       });
   }
 );

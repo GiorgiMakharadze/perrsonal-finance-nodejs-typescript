@@ -31,7 +31,7 @@ router.post("/", (req, res, next) => {
         .then((result) => {
         console.log(result);
         res.status(201).json({
-            message: "Handling POST reques to /categories",
+            message: "Handling POST request to /categories",
             createdCategory: result,
         });
     })
@@ -71,11 +71,7 @@ router.get("/:categoriesId", (req, res, next) => {
 });
 router.patch("/:categoriesId", (req, res, next) => {
     const id = req.params.categoriesId;
-    const updateOps = {};
-    for (const ops of req.body) {
-        updateOps[ops.propName] = ops.value;
-    }
-    categories_1.default.updateOne({ _id: id }, { $set: updateOps })
+    categories_1.default.updateOne({ _id: id }, { $set: { category: req.body.category } })
         .exec()
         .then((result) => {
         console.log(result);
@@ -83,7 +79,9 @@ router.patch("/:categoriesId", (req, res, next) => {
     })
         .catch((err) => {
         console.log(err);
-        res.status(500).json({ error: err });
+        res.status(500).json({
+            error: err,
+        });
     });
 });
 router.delete("/:categoriesId", (req, res, next) => {
@@ -95,7 +93,7 @@ router.delete("/:categoriesId", (req, res, next) => {
     })
         .catch((err) => {
         console.log(err);
-        error: err;
+        res.status(500).json({ error: err });
     });
 });
 exports.default = router;
