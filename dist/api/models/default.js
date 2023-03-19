@@ -27,7 +27,24 @@ const mongoose_1 = __importStar(require("mongoose"));
 const defaultsSchema = new mongoose_1.Schema({
     name: {
         type: String,
-        required: true,
+    },
+    category: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: "Category",
+    },
+    description: {
+        type: String,
+    },
+    amount: {
+        type: Number,
+    },
+    type: {
+        type: String,
+        enum: ["income", "outgoing"],
+    },
+    status: {
+        type: String,
+        enum: ["Pending", "Completed"],
     },
 });
 exports.default = mongoose_1.default.model("Default", defaultsSchema);

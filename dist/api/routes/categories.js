@@ -10,7 +10,7 @@ const default_1 = __importDefault(require("../models/default"));
 const router = (0, express_1.Router)();
 router.get("/", (req, res, next) => {
     const categoryQuery = categories_1.default.find().select("name _id");
-    const defaultsQuery = default_1.default.find().select("name _id");
+    const defaultsQuery = default_1.default.find().select("name _id description amount status _id");
     Promise.all([categoryQuery.exec(), defaultsQuery.exec()])
         .then((results) => {
         const [categories, defaults] = results;
@@ -21,8 +21,11 @@ router.get("/", (req, res, next) => {
             })),
             defaults: defaults.map((defaults) => ({
                 name: defaults.name,
-                _id: defaults._id,
+                description: defaults.description,
                 type: "default",
+                amount: defaults.amount,
+                status: defaults.status,
+                _id: defaults._id,
             })),
         };
         res.status(200).json(response);
@@ -44,7 +47,7 @@ router.post("/", (req, res, next) => {
         .then((result) => {
         console.log(result);
         res.status(201).json({
-            message: "Created product successfully",
+            message: "Created category successfully",
             createdCategory: {
                 name: result.name,
                 _id: result._id,

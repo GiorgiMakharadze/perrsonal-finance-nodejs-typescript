@@ -9,7 +9,9 @@ const router = Router();
 
 router.get("/", (req: Request, res: Response, next: NextFunction) => {
   const categoryQuery = Category.find().select("name _id");
-  const defaultsQuery = Defaults.find().select("name _id");
+  const defaultsQuery = Defaults.find().select(
+    "name _id description amount status _id"
+  );
 
   Promise.all([categoryQuery.exec(), defaultsQuery.exec()])
     .then((results) => {
@@ -21,8 +23,11 @@ router.get("/", (req: Request, res: Response, next: NextFunction) => {
         })),
         defaults: defaults.map((defaults) => ({
           name: defaults.name,
-          _id: defaults._id,
+          description: defaults.description,
           type: "default",
+          amount: defaults.amount,
+          status: defaults.status,
+          _id: defaults._id,
         })),
       };
       res.status(200).json(response);
@@ -45,7 +50,7 @@ router.post("/", (req: Request, res: Response, next: NextFunction) => {
     .then((result) => {
       console.log(result);
       res.status(201).json({
-        message: "Created product successfully",
+        message: "Created category successfully",
         createdCategory: {
           name: result.name,
           _id: result._id,
