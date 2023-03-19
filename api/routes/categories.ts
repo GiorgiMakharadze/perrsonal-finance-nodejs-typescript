@@ -3,6 +3,7 @@ import { Router } from "express";
 import mongoose from "mongoose";
 
 import Category from "../models/categories";
+import DefaultCategory from "../models/defaultCategories";
 
 const router = Router();
 
@@ -24,7 +25,7 @@ router.get("/", (req: Request, res: Response, next: NextFunction) => {
 router.post("/", (req: Request, res: Response, next: NextFunction) => {
   const category = new Category({
     _id: new mongoose.Types.ObjectId(),
-    category: req.body.category,
+    name: req.body.name,
   });
   category
     .save()
@@ -76,7 +77,7 @@ router.patch(
   "/:categoriesId",
   (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.categoriesId;
-    Category.updateOne({ _id: id }, { $set: { category: req.body.category } })
+    Category.updateOne({ _id: id }, { $set: { name: req.body.name } })
       .exec()
       .then((result) => {
         console.log(result);
@@ -95,10 +96,15 @@ router.delete(
   "/:categoriesId",
   (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.categoriesId;
+    let deletedCategory: any | undefined;
     Category.findByIdAndRemove({ _id: id })
       .exec()
       .then((result) => {
-        res.status(200).json(result);
+        deletedCategory = result;
+        return DefaultCategory.create({ name: deletedCategory?.name });
+      })
+      .then(() => {
+        res.status(200).json(deletedCategory);
       })
       .catch((err) => {
         console.log(err);
@@ -106,5 +112,21 @@ router.delete(
       });
   }
 );
+
+// router.delete(
+//   "/:categoriesId",
+//   (req: Request, res: Response, next: NextFunction) => {
+//     const id = req.params.categoriesId;
+//     Category.findByIdAndRemove({ _id: id })
+//       .exec()
+//       .then((result) => {
+//         res.status(200).json(result);
+//       })
+//       .catch((err) => {
+//         console.log(err);
+//         res.status(500).json({ error: err });
+//       });
+//   }
+// );
 
 export default router;

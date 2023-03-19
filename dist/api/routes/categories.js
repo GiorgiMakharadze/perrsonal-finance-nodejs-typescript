@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const mongoose_1 = __importDefault(require("mongoose"));
 const categories_1 = __importDefault(require("../models/categories"));
+const defaultCategories_1 = __importDefault(require("../models/defaultCategories"));
 const router = (0, express_1.Router)();
 router.get("/", (req, res, next) => {
     categories_1.default.find()
@@ -24,7 +25,7 @@ router.get("/", (req, res, next) => {
 router.post("/", (req, res, next) => {
     const category = new categories_1.default({
         _id: new mongoose_1.default.Types.ObjectId(),
-        category: req.body.category,
+        name: req.body.name,
     });
     category
         .save()
@@ -71,7 +72,7 @@ router.get("/:categoriesId", (req, res, next) => {
 });
 router.patch("/:categoriesId", (req, res, next) => {
     const id = req.params.categoriesId;
-    categories_1.default.updateOne({ _id: id }, { $set: { category: req.body.category } })
+    categories_1.default.updateOne({ _id: id }, { $set: { name: req.body.name } })
         .exec()
         .then((result) => {
         console.log(result);
@@ -86,14 +87,34 @@ router.patch("/:categoriesId", (req, res, next) => {
 });
 router.delete("/:categoriesId", (req, res, next) => {
     const id = req.params.categoriesId;
+    let deletedCategory;
     categories_1.default.findByIdAndRemove({ _id: id })
         .exec()
         .then((result) => {
-        res.status(200).json(result);
+        deletedCategory = result;
+        return defaultCategories_1.default.create({ name: deletedCategory === null || deletedCategory === void 0 ? void 0 : deletedCategory.name });
+    })
+        .then(() => {
+        res.status(200).json(deletedCategory);
     })
         .catch((err) => {
         console.log(err);
         res.status(500).json({ error: err });
     });
 });
+// router.delete(
+//   "/:categoriesId",
+//   (req: Request, res: Response, next: NextFunction) => {
+//     const id = req.params.categoriesId;
+//     Category.findByIdAndRemove({ _id: id })
+//       .exec()
+//       .then((result) => {
+//         res.status(200).json(result);
+//       })
+//       .catch((err) => {
+//         console.log(err);
+//         res.status(500).json({ error: err });
+//       });
+//   }
+// );
 exports.default = router;

@@ -9,6 +9,7 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const morgan_1 = __importDefault(require("morgan"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const categories_1 = __importDefault(require("./api/routes/categories"));
+const default_1 = __importDefault(require("./api/routes/default"));
 const expenses_1 = __importDefault(require("./api/routes/expenses"));
 //Connecting to MongoDb
 if (!process.env.MONGO_ATLAS) {
@@ -44,6 +45,7 @@ app.use((req, res, next) => {
 });
 //Routes which should handle request
 app.use("/categories", categories_1.default);
+app.use("/default", default_1.default);
 app.use("/expenses", expenses_1.default);
 //Error handling
 app.use((req, res, next) => {

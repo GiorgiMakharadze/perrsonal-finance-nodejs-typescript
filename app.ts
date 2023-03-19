@@ -6,6 +6,7 @@ import morgan from "morgan";
 import mongoose, { ConnectOptions } from "mongoose";
 
 import categoriesRoute from "./api/routes/categories";
+import defaultCategoriesRoute from "./api/routes/default";
 import expensesRoute from "./api/routes/expenses";
 
 //Connecting to MongoDb
@@ -49,6 +50,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 //Routes which should handle request
 app.use("/categories", categoriesRoute);
+app.use("/default", defaultCategoriesRoute);
 app.use("/expenses", expensesRoute);
 
 //Error handling
