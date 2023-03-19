@@ -8,11 +8,24 @@ import DefaultCategory from "../models/defaultCategories";
 const router = Router();
 
 router.get("/", (req: Request, res: Response, next: NextFunction) => {
-  Category.find()
-    .exec()
-    .then((docs) => {
-      console.log(docs);
-      res.status(200).json(docs);
+  const categoryQuery = Category.find().select("name _id");
+  const defaultCategoryQuery = DefaultCategory.find().select("name _id");
+
+  Promise.all([categoryQuery.exec(), defaultCategoryQuery.exec()])
+    .then((results) => {
+      const [categories, defaults] = results;
+      const response = {
+        categories: categories.map((category) => ({
+          name: category.name,
+          _id: category._id,
+        })),
+        defaults: defaults.map((defaultCategory) => ({
+          name: defaultCategory.name,
+          _id: defaultCategory._id,
+          type: "default",
+        })),
+      };
+      res.status(200).json(response);
     })
     .catch((err) => {
       console.log(err);
@@ -32,8 +45,11 @@ router.post("/", (req: Request, res: Response, next: NextFunction) => {
     .then((result) => {
       console.log(result);
       res.status(201).json({
-        message: "Handling POST request to /categories",
-        createdCategory: result,
+        message: "Created product successfully",
+        createdCategory: {
+          name: result.name,
+          _id: result._id,
+        },
       });
     })
     .catch((err) => {
@@ -49,6 +65,7 @@ router.get(
   (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.categoriesId;
     Category.findById(id)
+      .select("name _id")
       .exec()
       .then((doc) => {
         console.log("from database", doc);
@@ -81,7 +98,9 @@ router.patch(
       .exec()
       .then((result) => {
         console.log(result);
-        res.status(200).json(result);
+        res.status(200).json({
+          message: "Category updated",
+        });
       })
       .catch((err) => {
         console.log(err);
@@ -98,13 +117,16 @@ router.delete(
     const id = req.params.categoriesId;
     let deletedCategory: any | undefined;
     Category.findByIdAndRemove({ _id: id })
+      .select("name _id")
       .exec()
       .then((result) => {
         deletedCategory = result;
         return DefaultCategory.create({ name: deletedCategory?.name });
       })
       .then(() => {
-        res.status(200).json(deletedCategory);
+        const { name } = deletedCategory;
+        const message = `${name} is moved to defaults`;
+        res.status(200).json({ message, deletedCategory });
       })
       .catch((err) => {
         console.log(err);
@@ -112,21 +134,5 @@ router.delete(
       });
   }
 );
-
-// router.delete(
-//   "/:categoriesId",
-//   (req: Request, res: Response, next: NextFunction) => {
-//     const id = req.params.categoriesId;
-//     Category.findByIdAndRemove({ _id: id })
-//       .exec()
-//       .then((result) => {
-//         res.status(200).json(result);
-//       })
-//       .catch((err) => {
-//         console.log(err);
-//         res.status(500).json({ error: err });
-//       });
-//   }
-// );
 
 export default router;

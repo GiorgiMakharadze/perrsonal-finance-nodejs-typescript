@@ -7,10 +7,20 @@ const router = Router();
 
 router.get("/", (req: Request, res: Response, next: NextFunction) => {
   DefaultCategory.find()
+    .select("name _id")
     .exec()
     .then((docs) => {
+      const response = {
+        defaults: docs.map((doc) => {
+          return {
+            name: doc.name,
+            _id: doc._id,
+            type: "default",
+          };
+        }),
+      };
       console.log(docs);
-      res.status(200).json(docs);
+      res.status(200).json(response);
     })
     .catch((err) => {
       console.log(err);

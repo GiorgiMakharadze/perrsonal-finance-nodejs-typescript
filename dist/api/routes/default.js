@@ -8,10 +8,20 @@ const defaultCategories_1 = __importDefault(require("../models/defaultCategories
 const router = (0, express_1.Router)();
 router.get("/", (req, res, next) => {
     defaultCategories_1.default.find()
+        .select("name _id")
         .exec()
         .then((docs) => {
+        const response = {
+            defaults: docs.map((doc) => {
+                return {
+                    name: doc.name,
+                    _id: doc._id,
+                    type: "default",
+                };
+            }),
+        };
         console.log(docs);
-        res.status(200).json(docs);
+        res.status(200).json(response);
     })
         .catch((err) => {
         console.log(err);
