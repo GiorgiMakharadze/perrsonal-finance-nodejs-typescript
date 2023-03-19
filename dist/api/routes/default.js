@@ -4,10 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const defaultCategories_1 = __importDefault(require("../models/defaultCategories"));
+const default_1 = __importDefault(require("../models/default"));
 const router = (0, express_1.Router)();
 router.get("/", (req, res, next) => {
-    defaultCategories_1.default.find()
+    default_1.default.find()
         .select("name _id")
         .exec()
         .then((docs) => {
@@ -32,7 +32,7 @@ router.get("/", (req, res, next) => {
 });
 router.get("/:categoriesId", (req, res, next) => {
     const id = req.params.categoriesId;
-    defaultCategories_1.default.findById(id)
+    default_1.default.findById(id)
         .exec()
         .then((doc) => {
         console.log("from database", doc);

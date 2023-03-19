@@ -3,15 +3,15 @@ import { Router } from "express";
 import mongoose from "mongoose";
 
 import Category from "../models/categories";
-import DefaultCategory from "../models/defaultCategories";
+import Defaults from "../models/default";
 
 const router = Router();
 
 router.get("/", (req: Request, res: Response, next: NextFunction) => {
   const categoryQuery = Category.find().select("name _id");
-  const defaultCategoryQuery = DefaultCategory.find().select("name _id");
+  const defaultsQuery = Defaults.find().select("name _id");
 
-  Promise.all([categoryQuery.exec(), defaultCategoryQuery.exec()])
+  Promise.all([categoryQuery.exec(), defaultsQuery.exec()])
     .then((results) => {
       const [categories, defaults] = results;
       const response = {
@@ -19,9 +19,9 @@ router.get("/", (req: Request, res: Response, next: NextFunction) => {
           name: category.name,
           _id: category._id,
         })),
-        defaults: defaults.map((defaultCategory) => ({
-          name: defaultCategory.name,
-          _id: defaultCategory._id,
+        defaults: defaults.map((defaults) => ({
+          name: defaults.name,
+          _id: defaults._id,
           type: "default",
         })),
       };
@@ -121,7 +121,7 @@ router.delete(
       .exec()
       .then((result) => {
         deletedCategory = result;
-        return DefaultCategory.create({ name: deletedCategory?.name });
+        return Defaults.create({ name: deletedCategory?.name });
       })
       .then(() => {
         const { name } = deletedCategory;

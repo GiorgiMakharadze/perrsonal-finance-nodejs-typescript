@@ -3,10 +3,10 @@ import { Router } from "express";
 
 import Category from "../models/categories";
 import Expense from "../models/expenses";
+import Defaults from "../models/default";
 
 const router = Router();
 
-//Handle incoming GET requests to /expenses
 router.get("/", (req: Request, res: Response, next: NextFunction) => {
   Expense.find()
     .populate("category", "name")

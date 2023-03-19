@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import { Router } from "express";
 
-import DefaultCategory from "../models/defaultCategories";
+import DefaultCategory from "../models/default";
 
 const router = Router();
 

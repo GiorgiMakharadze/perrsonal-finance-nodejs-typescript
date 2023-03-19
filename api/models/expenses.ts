@@ -1,6 +1,6 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
-export interface IExpense extends mongoose.Document {
+export interface IExpense extends Document {
   description: string;
   type: "income" | "outgoing";
   amount: number;
@@ -8,7 +8,7 @@ export interface IExpense extends mongoose.Document {
   category: Schema.Types.ObjectId;
 }
 
-const ExpenseSchema = new Schema(
+const ExpenseSchema: Schema = new Schema(
   {
     description: { type: String, required: true },
     type: { type: String, enum: ["income", "outgoing"], required: true },

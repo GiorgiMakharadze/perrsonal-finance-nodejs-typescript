@@ -7,7 +7,6 @@ const express_1 = require("express");
 const categories_1 = __importDefault(require("../models/categories"));
 const expenses_1 = __importDefault(require("../models/expenses"));
 const router = (0, express_1.Router)();
-//Handle incoming GET requests to /expenses
 router.get("/", (req, res, next) => {
     expenses_1.default.find()
         .populate("category", "name")

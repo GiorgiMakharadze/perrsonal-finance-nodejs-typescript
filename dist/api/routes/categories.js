@@ -6,12 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const mongoose_1 = __importDefault(require("mongoose"));
 const categories_1 = __importDefault(require("../models/categories"));
-const defaultCategories_1 = __importDefault(require("../models/defaultCategories"));
+const default_1 = __importDefault(require("../models/default"));
 const router = (0, express_1.Router)();
 router.get("/", (req, res, next) => {
     const categoryQuery = categories_1.default.find().select("name _id");
-    const defaultCategoryQuery = defaultCategories_1.default.find().select("name _id");
-    Promise.all([categoryQuery.exec(), defaultCategoryQuery.exec()])
+    const defaultsQuery = default_1.default.find().select("name _id");
+    Promise.all([categoryQuery.exec(), defaultsQuery.exec()])
         .then((results) => {
         const [categories, defaults] = results;
         const response = {
@@ -19,9 +19,9 @@ router.get("/", (req, res, next) => {
                 name: category.name,
                 _id: category._id,
             })),
-            defaults: defaults.map((defaultCategory) => ({
-                name: defaultCategory.name,
-                _id: defaultCategory._id,
+            defaults: defaults.map((defaults) => ({
+                name: defaults.name,
+                _id: defaults._id,
                 type: "default",
             })),
         };
@@ -111,7 +111,7 @@ router.delete("/:categoriesId", (req, res, next) => {
         .exec()
         .then((result) => {
         deletedCategory = result;
-        return defaultCategories_1.default.create({ name: deletedCategory === null || deletedCategory === void 0 ? void 0 : deletedCategory.name });
+        return default_1.default.create({ name: deletedCategory === null || deletedCategory === void 0 ? void 0 : deletedCategory.name });
     })
         .then(() => {
         const { name } = deletedCategory;
