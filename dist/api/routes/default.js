@@ -8,7 +8,7 @@ const default_1 = __importDefault(require("../models/default"));
 const router = (0, express_1.Router)();
 router.get("/", (req, res, next) => {
     default_1.default.find()
-        .select("name _id")
+        .select("name _id description amount status type")
         .exec()
         .then((docs) => {
         const response = {
@@ -16,6 +16,9 @@ router.get("/", (req, res, next) => {
                 return {
                     name: doc.name,
                     _id: doc._id,
+                    description: doc.description,
+                    amount: doc.amount,
+                    status: doc.status,
                     type: "default",
                 };
             }),
@@ -30,9 +33,10 @@ router.get("/", (req, res, next) => {
         });
     });
 });
-router.get("/:categoriesId", (req, res, next) => {
-    const id = req.params.categoriesId;
+router.get("/:defaultsId", (req, res, next) => {
+    const id = req.params.defaultsId;
     default_1.default.findById(id)
+        .select("name _id description amount status type")
         .exec()
         .then((doc) => {
         console.log("from database", doc);

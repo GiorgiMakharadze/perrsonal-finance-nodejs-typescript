@@ -3,6 +3,7 @@ import mongoose, { Document, Schema } from "mongoose";
 export interface IDefault extends Document {
   name: string;
   description: string;
+  category: string;
   type: string;
   amount: number;
   status: string;

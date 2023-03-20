@@ -10,7 +10,7 @@ const default_1 = __importDefault(require("../models/default"));
 const router = (0, express_1.Router)();
 router.get("/", (req, res, next) => {
     const categoryQuery = categories_1.default.find().select("name _id");
-    const defaultsQuery = default_1.default.find().select("name _id description amount status _id");
+    const defaultsQuery = default_1.default.find().select("name _id description amount status type");
     Promise.all([categoryQuery.exec(), defaultsQuery.exec()])
         .then((results) => {
         const [categories, defaults] = results;
@@ -22,7 +22,7 @@ router.get("/", (req, res, next) => {
             defaults: defaults.map((defaults) => ({
                 name: defaults.name,
                 description: defaults.description,
-                type: "default",
+                type: defaults.type,
                 amount: defaults.amount,
                 status: defaults.status,
                 _id: defaults._id,

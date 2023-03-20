@@ -10,7 +10,7 @@ const router = Router();
 router.get("/", (req: Request, res: Response, next: NextFunction) => {
   const categoryQuery = Category.find().select("name _id");
   const defaultsQuery = Defaults.find().select(
-    "name _id description amount status _id"
+    "name _id description amount status type"
   );
 
   Promise.all([categoryQuery.exec(), defaultsQuery.exec()])
@@ -24,7 +24,7 @@ router.get("/", (req: Request, res: Response, next: NextFunction) => {
         defaults: defaults.map((defaults) => ({
           name: defaults.name,
           description: defaults.description,
-          type: "default",
+          type: defaults.type,
           amount: defaults.amount,
           status: defaults.status,
           _id: defaults._id,

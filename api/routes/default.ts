@@ -1,5 +1,4 @@
-import express, { Request, Response, NextFunction } from "express";
-import { Router } from "express";
+import { Request, Response, NextFunction, Router } from "express";
 
 import DefaultCategory from "../models/default";
 
@@ -7,7 +6,7 @@ const router = Router();
 
 router.get("/", (req: Request, res: Response, next: NextFunction) => {
   DefaultCategory.find()
-    .select("name _id")
+    .select("name _id description amount status type")
     .exec()
     .then((docs) => {
       const response = {
@@ -15,6 +14,9 @@ router.get("/", (req: Request, res: Response, next: NextFunction) => {
           return {
             name: doc.name,
             _id: doc._id,
+            description: doc.description,
+            amount: doc.amount,
+            status: doc.status,
             type: "default",
           };
         }),
@@ -31,10 +33,11 @@ router.get("/", (req: Request, res: Response, next: NextFunction) => {
 });
 
 router.get(
-  "/:categoriesId",
+  "/:defaultsId",
   (req: Request, res: Response, next: NextFunction) => {
-    const id = req.params.categoriesId;
+    const id = req.params.defaultsId;
     DefaultCategory.findById(id)
+      .select("name _id description amount status type")
       .exec()
       .then((doc) => {
         console.log("from database", doc);
