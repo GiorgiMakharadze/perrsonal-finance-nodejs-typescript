@@ -3,9 +3,10 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface IExpense extends Document {
   description: string;
   type: "income" | "outgoing";
-  amount: number;
+  amount: number | string[];
   status?: "Processing" | "Completed";
   category: Schema.Types.ObjectId;
+  createdAt: number;
 }
 
 const ExpenseSchema: Schema = new Schema(

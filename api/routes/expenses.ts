@@ -7,9 +7,37 @@ import Default from "../models/default";
 
 const router = Router();
 
+//Making get request to /expenses and filtering responses
 router.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const docs = await Expense.find().populate("category", "name").exec();
+    let query: any = {};
+    const { category, type, amount, status, createdAt } = req.query;
+
+    // Filter by category
+    if (category) {
+      const categoryDoc = await Category.findOne({ name: category });
+      if (!categoryDoc) {
+        return res.status(404).json({ error: "Category not found" });
+      }
+      query.category = categoryDoc._id;
+    }
+
+    // Filter by type
+    if (type) {
+      query.type = type;
+    }
+
+    // Filter by amount range
+    if (amount) {
+      query.amount = amount;
+    }
+
+    // Filter by status
+    if (status) {
+      query.status = status;
+    }
+
+    const docs = await Expense.find(query).populate("category", "name").exec();
     if (docs.length === 0) {
       return res.status(404).json({ error: "Expenses not found" });
     }
@@ -18,9 +46,9 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
         return {
           category: doc.category,
           type: doc.type,
-          description: doc.description,
           amount: doc.amount,
           status: doc.status,
+          createdAt: doc.createdAt,
           _id: doc._id,
         };
       }),
@@ -32,6 +60,7 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
+//Making post request to /expenses
 router.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { category, description, amount, status, type } = req.body;
@@ -97,6 +126,7 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
+//Making get request to /expenses/(id that user provides) and Searching by ID
 router.get(
   "/:expenseId",
   async (req: Request, res: Response, next: NextFunction) => {

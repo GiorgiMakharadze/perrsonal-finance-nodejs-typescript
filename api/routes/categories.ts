@@ -7,6 +7,7 @@ import Defaults from "../models/default";
 
 const router = Router();
 
+//Making get request to /categories
 router.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const categoryQuery = Category.find().select("name _id");
@@ -43,6 +44,7 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
+//Making post request to /categories
 router.post("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const category = new Category({
@@ -67,13 +69,22 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
+//Making get request to /categories/(id that user provided)
 router.get(
   "/:categoriesId",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = req.params.categoriesId;
-      const doc = await Category.findById(id).select("name _id").exec();
-      console.log("from database", doc);
+
+      const [categoryDoc, defaultDoc] = await Promise.all([
+        Category.findById(id).select("name _id").exec(),
+        Defaults.findById(id)
+          .select("name _id description amount status type")
+          .exec(),
+      ]);
+
+      const doc = categoryDoc || defaultDoc;
+
       if (doc) {
         res.status(200).json(doc);
       } else {
@@ -94,6 +105,7 @@ router.get(
   }
 );
 
+//Making patch request to /categories/(id that user provided)
 router.patch(
   "/:categoriesId",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -116,6 +128,7 @@ router.patch(
   }
 );
 
+//Making delete request to /categories/(id that user provided)
 router.delete("/:categoriesId", async (req: Request, res: Response) => {
   const id = req.params.categoriesId;
 

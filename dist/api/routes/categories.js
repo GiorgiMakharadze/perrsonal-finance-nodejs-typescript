@@ -17,6 +17,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const categories_1 = __importDefault(require("../models/categories"));
 const default_1 = __importDefault(require("../models/default"));
 const router = (0, express_1.Router)();
+//Making get request to /categories
 router.get("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const categoryQuery = categories_1.default.find().select("name _id");
@@ -49,6 +50,7 @@ router.get("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         });
     }
 }));
+//Making post request to /categories
 router.post("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const category = new categories_1.default({
@@ -72,11 +74,17 @@ router.post("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function*
         });
     }
 }));
+//Making get request to /categories/(id that user provided)
 router.get("/:categoriesId", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.categoriesId;
-        const doc = yield categories_1.default.findById(id).select("name _id").exec();
-        console.log("from database", doc);
+        const [categoryDoc, defaultDoc] = yield Promise.all([
+            categories_1.default.findById(id).select("name _id").exec(),
+            default_1.default.findById(id)
+                .select("name _id description amount status type")
+                .exec(),
+        ]);
+        const doc = categoryDoc || defaultDoc;
         if (doc) {
             res.status(200).json(doc);
         }
@@ -98,6 +106,7 @@ router.get("/:categoriesId", (req, res, next) => __awaiter(void 0, void 0, void 
         }
     }
 }));
+//Making patch request to /categories/(id that user provided)
 router.patch("/:categoriesId", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.categoriesId;
@@ -114,6 +123,7 @@ router.patch("/:categoriesId", (req, res, next) => __awaiter(void 0, void 0, voi
         });
     }
 }));
+//Making delete request to /categories/(id that user provided)
 router.delete("/:categoriesId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.categoriesId;
     try {

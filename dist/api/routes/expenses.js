@@ -18,9 +18,32 @@ const categories_1 = __importDefault(require("../models/categories"));
 const expenses_1 = __importDefault(require("../models/expenses"));
 const default_1 = __importDefault(require("../models/default"));
 const router = (0, express_1.Router)();
+//Making get request to /expenses and filtering responses
 router.get("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const docs = yield expenses_1.default.find().populate("category", "name").exec();
+        let query = {};
+        const { category, type, amount, status, createdAt } = req.query;
+        // Filter by category
+        if (category) {
+            const categoryDoc = yield categories_1.default.findOne({ name: category });
+            if (!categoryDoc) {
+                return res.status(404).json({ error: "Category not found" });
+            }
+            query.category = categoryDoc._id;
+        }
+        // Filter by type
+        if (type) {
+            query.type = type;
+        }
+        // Filter by amount range
+        if (amount) {
+            query.amount = amount;
+        }
+        // Filter by status
+        if (status) {
+            query.status = status;
+        }
+        const docs = yield expenses_1.default.find(query).populate("category", "name").exec();
         if (docs.length === 0) {
             return res.status(404).json({ error: "Expenses not found" });
         }
@@ -29,9 +52,9 @@ router.get("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
                 return {
                     category: doc.category,
                     type: doc.type,
-                    description: doc.description,
                     amount: doc.amount,
                     status: doc.status,
+                    createdAt: doc.createdAt,
                     _id: doc._id,
                 };
             }),
@@ -43,6 +66,7 @@ router.get("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         res.status(500).json({ error: err });
     }
 }));
+//Making post request to /expenses
 router.post("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { category, description, amount, status, type } = req.body;
@@ -103,6 +127,7 @@ router.post("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function*
         res.status(500).json({ error: err });
     }
 }));
+//Making get request to /expenses/(id that user provides) and Searching by ID
 router.get("/:expenseId", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.expenseId;
