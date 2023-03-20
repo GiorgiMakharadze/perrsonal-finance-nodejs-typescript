@@ -44,6 +44,10 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
         status,
       });
 
+      if (defaultExpense.type === "outgoing" && !defaultExpense.status) {
+        return res.status(400).json({ error: "You forgot to add a status!" });
+      }
+
       const result = await defaultExpense.save();
       res.status(201).json({
         message:
@@ -70,6 +74,10 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
         status,
       });
 
+      if (expense.type === "outgoing" && !expense.status) {
+        return res.status(400).json({ error: "You forgot to add a status!" });
+      }
+
       const result = await expense.save();
       res.status(201).json({
         message: "Expense created successfully",
@@ -85,11 +93,7 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
     }
   } catch (err) {
     console.log(err);
-    if (req.body.type === "outgoing" && !req.body.status) {
-      res.status(400).json({ error: "You forgot to add a status!" });
-    } else {
-      res.status(500).json({ error: err });
-    }
+    res.status(500).json({ error: err });
   }
 });
 

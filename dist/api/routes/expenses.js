@@ -54,6 +54,9 @@ router.post("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function*
                 amount,
                 status,
             });
+            if (defaultExpense.type === "outgoing" && !defaultExpense.status) {
+                return res.status(400).json({ error: "You forgot to add a status!" });
+            }
             const result = yield defaultExpense.save();
             res.status(201).json({
                 message: "You have not selected a category, so this expense has been defaulted",
@@ -78,6 +81,9 @@ router.post("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function*
                 amount,
                 status,
             });
+            if (expense.type === "outgoing" && !expense.status) {
+                return res.status(400).json({ error: "You forgot to add a status!" });
+            }
             const result = yield expense.save();
             res.status(201).json({
                 message: "Expense created successfully",
@@ -94,12 +100,7 @@ router.post("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     }
     catch (err) {
         console.log(err);
-        if (req.body.type === "outgoing" && !req.body.status) {
-            res.status(400).json({ error: "You forgot to add a status!" });
-        }
-        else {
-            res.status(500).json({ error: err });
-        }
+        res.status(500).json({ error: err });
     }
 }));
 router.get("/:expenseId", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
