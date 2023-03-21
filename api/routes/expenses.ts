@@ -7,7 +7,7 @@ import Default from "../models/default";
 
 const router = Router();
 
-//Making get request to /expenses and filtering responses
+//Making get request to /expenses, filtering  and sorting responses
 router.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
     let query: any = {};
@@ -37,10 +37,21 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
       query.status = status;
     }
 
+    // Filter by createdAt
+    //add this feature!
+
     const docs = await Expense.find(query).populate("category", "name").exec();
     if (docs.length === 0) {
       return res.status(404).json({ error: "Expenses not found" });
     }
+
+    // // Sort by amount
+    // if (req.query.order === "increasing") {
+    //   docs.sort(({ a, b }: any) => a.amount - b.amount);
+    // } else if (req.query.order === "decreasing") {
+    //   docs.sort(({ a, b }: any) => b.amount - a.amount);
+    // }
+
     const response = {
       expenses: docs.map((doc) => {
         return {

@@ -11,6 +11,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const categories_1 = __importDefault(require("./api/routes/categories"));
 const default_1 = __importDefault(require("./api/routes/default"));
 const expenses_1 = __importDefault(require("./api/routes/expenses"));
+const user_1 = __importDefault(require("./api/routes/user"));
 //Connecting to MongoDb
 if (!process.env.MONGO_ATLAS) {
     throw new Error("MONGO_ATLAS environment variable is not defined");
@@ -47,6 +48,7 @@ app.use((req, res, next) => {
 app.use("/categories", categories_1.default);
 app.use("/default", default_1.default);
 app.use("/expenses", expenses_1.default);
+app.use("/user", user_1.default);
 //Error handling
 app.use((req, res, next) => {
     next((0, http_errors_1.default)(404, "Not found"));

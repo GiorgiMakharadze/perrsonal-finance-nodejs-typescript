@@ -8,6 +8,7 @@ import mongoose, { ConnectOptions } from "mongoose";
 import categoriesRoute from "./api/routes/categories";
 import defaultCategoriesRoute from "./api/routes/default";
 import expensesRoute from "./api/routes/expenses";
+import userRoute from "./api/routes/user";
 
 //Connecting to MongoDb
 if (!process.env.MONGO_ATLAS) {
@@ -52,6 +53,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use("/categories", categoriesRoute);
 app.use("/default", defaultCategoriesRoute);
 app.use("/expenses", expensesRoute);
+app.use("/user", userRoute);
 
 //Error handling
 app.use((req: Request, res: Response, next: NextFunction) => {

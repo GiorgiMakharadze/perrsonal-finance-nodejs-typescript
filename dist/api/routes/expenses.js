@@ -18,7 +18,7 @@ const categories_1 = __importDefault(require("../models/categories"));
 const expenses_1 = __importDefault(require("../models/expenses"));
 const default_1 = __importDefault(require("../models/default"));
 const router = (0, express_1.Router)();
-//Making get request to /expenses and filtering responses
+//Making get request to /expenses, filtering  and sorting responses
 router.get("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let query = {};
@@ -43,10 +43,18 @@ router.get("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         if (status) {
             query.status = status;
         }
+        // Filter by createdAt
+        //add this feature!
         const docs = yield expenses_1.default.find(query).populate("category", "name").exec();
         if (docs.length === 0) {
             return res.status(404).json({ error: "Expenses not found" });
         }
+        // // Sort by amount
+        // if (req.query.order === "increasing") {
+        //   docs.sort(({ a, b }: any) => a.amount - b.amount);
+        // } else if (req.query.order === "decreasing") {
+        //   docs.sort(({ a, b }: any) => b.amount - a.amount);
+        // }
         const response = {
             expenses: docs.map((doc) => {
                 return {
