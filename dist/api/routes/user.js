@@ -6,8 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const mongoose_1 = __importDefault(require("mongoose"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_1 = __importDefault(require("../models/user"));
 const router = (0, express_1.Router)();
+//Making post request to /user/signup  REGISTRATION
 router.post("/signup", (req, res, next) => {
     user_1.default.find({ email: req.body.email })
         .exec()
@@ -49,6 +51,56 @@ router.post("/signup", (req, res, next) => {
         }
     });
 });
+//Making post request to /user/login AUTHENTICATION(LOG IN)
+router.post("/login", (req, res, next) => {
+    console.log("Request received: ", req.body);
+    user_1.default.findOne({ email: req.body.email })
+        .exec()
+        .then((user) => {
+        console.log("User found: ", user);
+        if (!user) {
+            return res.status(401).json({
+                message: "Auth failed",
+            });
+        }
+        bcrypt_1.default.compare(req.body.password, user.password, (err, result) => {
+            console.log("Password compared: ", result);
+            if (err) {
+                return res.status(401).json({
+                    message: "Auth failed",
+                });
+            }
+            if (result) {
+                if (!process.env.JWT_KEY) {
+                    return res.status(500).json({
+                        error: "JWT_KEY not defined",
+                    });
+                }
+                const token = jsonwebtoken_1.default.sign({
+                    email: user.email,
+                    userId: user._id,
+                }, process.env.JWT_KEY, {
+                    expiresIn: "1hr",
+                });
+                return res.status(200).json({
+                    message: "Auth successful",
+                    token: token,
+                });
+            }
+            return res.status(401).json({
+                message: "Auth failed",
+            });
+        });
+    })
+        .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+            error: err,
+        });
+    });
+});
+//Making delete request to /user/reset-password  RESETING PASSWORD
+//Making delete request to /user/(id that user provided)
 router.delete("/:userId", (req, res, next) => {
     user_1.default.findByIdAndRemove({ _id: req.params.userId })
         .exec()

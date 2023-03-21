@@ -1,11 +1,13 @@
 import { Request, Response, NextFunction, Router } from "express";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 import User from "../models/user";
 
 const router = Router();
 
+//Making post request to /user/signup  REGISTRATION
 router.post("/signup", (req: Request, res: Response, next: NextFunction) => {
   User.find({ email: req.body.email })
     .exec()
@@ -46,6 +48,65 @@ router.post("/signup", (req: Request, res: Response, next: NextFunction) => {
     });
 });
 
+//Making post request to /user/login AUTHENTICATION(LOG IN)
+router.post("/login", (req: Request, res: Response, next: NextFunction) => {
+  console.log("Request received: ", req.body);
+
+  User.findOne({ email: req.body.email })
+    .exec()
+    .then((user: any) => {
+      console.log("User found: ", user);
+
+      if (!user) {
+        return res.status(401).json({
+          message: "Auth failed",
+        });
+      }
+      bcrypt.compare(req.body.password, user.password, (err, result) => {
+        console.log("Password compared: ", result);
+
+        if (err) {
+          return res.status(401).json({
+            message: "Auth failed",
+          });
+        }
+        if (result) {
+          if (!process.env.JWT_KEY) {
+            return res.status(500).json({
+              error: "JWT_KEY not defined",
+            });
+          }
+          const token = jwt.sign(
+            {
+              email: user.email,
+              userId: user._id,
+            },
+            process.env.JWT_KEY,
+            {
+              expiresIn: "1hr",
+            }
+          );
+          return res.status(200).json({
+            message: "Auth successful",
+            token: token,
+          });
+        }
+        return res.status(401).json({
+          message: "Auth failed",
+        });
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    });
+});
+
+//Making delete request to /user/reset-password  RESETING PASSWORD
+
+//Making delete request to /user/(id that user provided)
 router.delete("/:userId", (req: Request, res: Response, next: NextFunction) => {
   User.findByIdAndRemove({ _id: req.params.userId })
     .exec()
