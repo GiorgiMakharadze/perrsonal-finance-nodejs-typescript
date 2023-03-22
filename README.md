@@ -9,7 +9,7 @@ Users can create and manage personal finance categories. Users can create catego
 Users can add personal outgoing and income for themselves in one or more categories of their choice. If the category is not specified, the record is added to the default category. Each expense has a short description, amount, type(income or outgoing), status(Pending or Completed) and category.
 application includes search, filter, and sorting functionalities for expenses. Users can search for expenses, filter them based on income or outgoing expense, time period, amount, or status, and sort them in a way that suits their needs.
 
-## Used Technologis
+## Used Technologies
 
 In this build I used Node.js, Express.js, Mongodb, Mongoose, Typecript, BcryptJs, JsonWebTokens, Nodemon, Morgan, Dotenv, bodyparser.
 
@@ -36,7 +36,7 @@ In this build I used Node.js, Express.js, Mongodb, Mongoose, Typecript, BcryptJs
 #### Get concrete object
 
 ```http
-  GET /categories/id
+  GET /categories/{id}
 ```
 
 you need to provide the id of the object that you want to Get
@@ -44,7 +44,7 @@ you need to provide the id of the object that you want to Get
 #### Change category name
 
 ```http
-  PATCH /categories/id
+  PATCH /categories/{id}
 ```
 
 | Parameter | Type     | Description                                   |
@@ -54,7 +54,7 @@ you need to provide the id of the object that you want to Get
 #### Delete category
 
 ```http
-  DELETE /categories/id
+  DELETE /categories/{id}
 ```
 
 you need to provide the id of the object that you want to Delete
@@ -83,7 +83,7 @@ you need to provide the id of the object that you want to Delete
 #### Get concrete object(search)
 
 ```http
-  GET /expenses/id
+  GET /expenses/{id}
 ```
 
 you need to provide the id of the object that you want to Get(search)
