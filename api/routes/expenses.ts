@@ -27,7 +27,7 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
       query.type = type;
     }
 
-    // Filter by amount range
+    // Filter by amount
     if (amount) {
       query.amount = amount;
     }

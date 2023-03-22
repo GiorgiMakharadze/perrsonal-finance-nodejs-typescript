@@ -35,7 +35,7 @@ router.get("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         if (type) {
             query.type = type;
         }
-        // Filter by amount range
+        // Filter by amount
         if (amount) {
             query.amount = amount;
         }
