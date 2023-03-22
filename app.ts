@@ -2,6 +2,8 @@ import express, { Request, Response, NextFunction } from "express";
 import httpErrors from "http-errors";
 import bodyParser from "body-parser";
 import morgan from "morgan";
+import dotenv from "dotenv";
+dotenv.config();
 
 import mongoose, { ConnectOptions } from "mongoose";
 

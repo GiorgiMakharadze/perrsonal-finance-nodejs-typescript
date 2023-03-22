@@ -2,6 +2,7 @@ import { Request, Response, NextFunction, Router } from "express";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
 
 import User from "../models/user";
 
@@ -104,7 +105,62 @@ router.post("/login", (req: Request, res: Response, next: NextFunction) => {
     });
 });
 
-//Making delete request to /user/reset-password  RESETING PASSWORD
+//Making post request to /user/reset-password RESET PASSWORD
+router.post(
+  "/reset-password",
+  (req: Request, res: Response, next: NextFunction) => {
+    User.findOne({ email: req.body.email })
+      .exec()
+      .then((user: any) => {
+        if (!user) {
+          return res.status(404).json({
+            message: "User not found",
+          });
+        }
+
+        const newPassword = req.body.password;
+
+        if (!newPassword) {
+          return res.status(500).json({
+            message: "Please write your new password.",
+          });
+        }
+
+        bcrypt.hash(newPassword, 10, (err, hash) => {
+          if (err) {
+            return res.status(500).json({
+              error: err,
+            });
+          } else {
+            user.password = hash;
+
+            user
+              .save()
+              .then((result: any) => {
+                console.log(result);
+
+                res.status(200).json({
+                  message: "Password reset successful",
+                  newPassword: newPassword,
+                });
+              })
+              .catch((err: Error) => {
+                console.log(err);
+                res.status(500).json({
+                  error: err,
+                });
+              });
+          }
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: err,
+        });
+      });
+  }
+);
 
 //Making delete request to /user/(id that user provided)
 router.delete("/:userId", (req: Request, res: Response, next: NextFunction) => {

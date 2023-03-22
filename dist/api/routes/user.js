@@ -99,7 +99,55 @@ router.post("/login", (req, res, next) => {
         });
     });
 });
-//Making delete request to /user/reset-password  RESETING PASSWORD
+//Making post request to /user/reset-password RESET PASSWORD
+router.post("/reset-password", (req, res, next) => {
+    user_1.default.findOne({ email: req.body.email })
+        .exec()
+        .then((user) => {
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found",
+            });
+        }
+        const newPassword = req.body.password;
+        if (!newPassword) {
+            return res.status(500).json({
+                message: "Please write your new password.",
+            });
+        }
+        bcrypt_1.default.hash(newPassword, 10, (err, hash) => {
+            if (err) {
+                return res.status(500).json({
+                    error: err,
+                });
+            }
+            else {
+                user.password = hash;
+                user
+                    .save()
+                    .then((result) => {
+                    console.log(result);
+                    res.status(200).json({
+                        message: "Password reset successful",
+                        newPassword: newPassword,
+                    });
+                })
+                    .catch((err) => {
+                    console.log(err);
+                    res.status(500).json({
+                        error: err,
+                    });
+                });
+            }
+        });
+    })
+        .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+            error: err,
+        });
+    });
+});
 //Making delete request to /user/(id that user provided)
 router.delete("/:userId", (req, res, next) => {
     user_1.default.findByIdAndRemove({ _id: req.params.userId })
