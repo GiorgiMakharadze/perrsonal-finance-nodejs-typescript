@@ -6,7 +6,7 @@ export interface IExpense extends Document {
   amount: number | string[];
   status?: "Processing" | "Completed";
   category: Schema.Types.ObjectId;
-  createdAt: number;
+  createdAt: Date;
 }
 
 const ExpenseSchema: Schema = new Schema(

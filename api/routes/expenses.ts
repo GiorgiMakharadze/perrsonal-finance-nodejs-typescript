@@ -2,7 +2,7 @@ import { Request, Response, NextFunction, Router } from "express";
 import mongoose from "mongoose";
 
 import Category from "../models/categories";
-import Expense from "../models/expenses";
+import Expense, { IExpense } from "../models/expenses";
 import Default from "../models/default";
 
 const router = Router();
@@ -37,20 +37,22 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
       query.status = status;
     }
 
-    // Filter by createdAt
-    //add this feature!
+    // Filter by date
+    if (createdAt) {
+      query.createdAt = createdAt;
+    }
 
     const docs = await Expense.find(query).populate("category", "name").exec();
     if (docs.length === 0) {
       return res.status(404).json({ error: "Expenses not found" });
     }
 
-    // // Sort by amount
-    // if (req.query.order === "increasing") {
-    //   docs.sort(({ a, b }: any) => a.amount - b.amount);
-    // } else if (req.query.order === "decreasing") {
-    //   docs.sort(({ a, b }: any) => b.amount - a.amount);
-    // }
+    // Sort by amount
+    if (req.query.order === "increasing") {
+      docs.sort((a, b) => +a.amount - +b.amount);
+    } else if (req.query.order === "decreasing") {
+      docs.sort((a, b) => +b.amount - +a.amount);
+    }
 
     const response = {
       expenses: docs.map((doc) => {
@@ -111,6 +113,7 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
         description,
         type,
         amount,
+        date: req.body.date,
         status,
       });
 

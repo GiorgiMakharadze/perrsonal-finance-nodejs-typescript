@@ -34,17 +34,21 @@ const defaultsSchema = new mongoose_1.Schema({
     },
     description: {
         type: String,
+        required: true,
     },
     amount: {
         type: Number,
+        required: true,
     },
     type: {
         type: String,
         enum: ["income", "outgoing"],
+        required: true,
     },
     status: {
         type: String,
         enum: ["Pending", "Completed"],
+        required: true,
     },
 });
 exports.default = mongoose_1.default.model("Default", defaultsSchema);
