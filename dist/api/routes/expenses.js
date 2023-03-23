@@ -23,7 +23,7 @@ router.get("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
     try {
         let query = {};
         const { category, type, amount, status, createdAt } = req.query;
-        // Filter by category
+        // Filters
         if (category) {
             const categoryDoc = yield categories_1.default.findOne({ name: category });
             if (!categoryDoc) {
@@ -31,19 +31,15 @@ router.get("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
             }
             query.category = categoryDoc._id;
         }
-        // Filter by type
         if (type) {
             query.type = type;
         }
-        // Filter by amount
         if (amount) {
             query.amount = amount;
         }
-        // Filter by status
         if (status) {
             query.status = status;
         }
-        // Filter by date
         if (createdAt) {
             query.createdAt = createdAt;
         }
@@ -51,7 +47,7 @@ router.get("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         if (docs.length === 0) {
             return res.status(404).json({ error: "Expenses not found" });
         }
-        // Sort by amount
+        // Sorting by amount
         if (req.query.order === "increasing") {
             docs.sort((a, b) => +a.amount - +b.amount);
         }

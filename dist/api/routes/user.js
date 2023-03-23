@@ -18,6 +18,45 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_1 = __importDefault(require("../models/user"));
 const router = (0, express_1.Router)();
+//Making get request to /user
+router.get("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const users = yield user_1.default.find().select("email _id");
+        if (users.length > 0) {
+            res.status(200).json({
+                message: "All users",
+                users: users,
+            });
+        }
+        else {
+            res.status(404).json({ message: "Users not found" });
+        }
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({
+            error: err,
+        });
+    }
+}));
+//Making get request to /user/(id that user provides) and Searching by ID
+router.get("/:userId", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.params.userId;
+        const user = yield user_1.default.findById(id).exec();
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        res.status(200).json({
+            email: user.email,
+            _id: user._id,
+        });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error });
+    }
+}));
 //Making post request to /user/signup  REGISTRATION
 router.post("/signup", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -38,6 +77,8 @@ router.post("/signup", (req, res, next) => __awaiter(void 0, void 0, void 0, fun
             console.log(result);
             res.status(201).json({
                 message: "User created",
+                _id: user._id,
+                email: user.email,
             });
         }
     }

@@ -74,7 +74,7 @@ router.post("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function*
         });
     }
 }));
-//Making get request to /categories/(id that user provided)
+//Making get request to /categories/(id that user provided) and Searching by ID
 router.get("/:categoriesId", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.categoriesId;

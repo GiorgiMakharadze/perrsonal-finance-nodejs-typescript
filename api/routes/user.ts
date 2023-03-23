@@ -7,6 +7,47 @@ import User from "../models/user";
 
 const router = Router();
 
+//Making get request to /user
+router.get("/", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const users = await User.find().select("email _id");
+    if (users.length > 0) {
+      res.status(200).json({
+        message: "All users",
+        users: users,
+      });
+    } else {
+      res.status(404).json({ message: "Users not found" });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      error: err,
+    });
+  }
+});
+
+//Making get request to /user/(id that user provides) and Searching by ID
+router.get(
+  "/:userId",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = req.params.userId;
+      const user = await User.findById(id).exec();
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      res.status(200).json({
+        email: user.email,
+        _id: user._id,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: error });
+    }
+  }
+);
+
 //Making post request to /user/signup  REGISTRATION
 router.post(
   "/signup",
@@ -28,6 +69,8 @@ router.post(
         console.log(result);
         res.status(201).json({
           message: "User created",
+          _id: user._id,
+          email: user.email,
         });
       }
     } catch (err) {

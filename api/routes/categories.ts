@@ -1,5 +1,4 @@
-import { Request, Response, NextFunction } from "express";
-import { Router } from "express";
+import { Request, Response, NextFunction, Router } from "express";
 import mongoose from "mongoose";
 
 import Category from "../models/categories";
@@ -21,6 +20,7 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
     ]);
 
     const [categories, defaults] = results;
+
     const response = {
       categories: categories.map((category) => ({
         name: category.name,
@@ -54,6 +54,7 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
 
     const result = await category.save();
     console.log(result);
+
     res.status(201).json({
       message: "Created category successfully",
       createdCategory: {
@@ -69,7 +70,7 @@ router.post("/", async (req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-//Making get request to /categories/(id that user provided)
+//Making get request to /categories/(id that user provided) and Searching by ID
 router.get(
   "/:categoriesId",
   async (req: Request, res: Response, next: NextFunction) => {
@@ -143,8 +144,11 @@ router.delete("/:categoriesId", async (req: Request, res: Response) => {
         .json({ message: "No valid entry found for provided ID" });
     }
     await Defaults.create({ name: deletedCategory?.name });
+
     const { name } = deletedCategory;
+
     const message = `${name} is moved to defaults`;
+
     res.status(200).json({ message, deletedCategory });
   } catch (err: Error | any) {
     if (err.name === "CastError") {

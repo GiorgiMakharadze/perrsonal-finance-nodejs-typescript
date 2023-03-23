@@ -2,7 +2,7 @@ import { Request, Response, NextFunction, Router } from "express";
 import mongoose from "mongoose";
 
 import Category from "../models/categories";
-import Expense, { IExpense } from "../models/expenses";
+import Expense from "../models/expenses";
 import Default from "../models/default";
 
 const router = Router();
@@ -13,7 +13,7 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
     let query: any = {};
     const { category, type, amount, status, createdAt } = req.query;
 
-    // Filter by category
+    // Filters
     if (category) {
       const categoryDoc = await Category.findOne({ name: category });
       if (!categoryDoc) {
@@ -22,22 +22,18 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
       query.category = categoryDoc._id;
     }
 
-    // Filter by type
     if (type) {
       query.type = type;
     }
 
-    // Filter by amount
     if (amount) {
       query.amount = amount;
     }
 
-    // Filter by status
     if (status) {
       query.status = status;
     }
 
-    // Filter by date
     if (createdAt) {
       query.createdAt = createdAt;
     }
@@ -47,7 +43,7 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
       return res.status(404).json({ error: "Expenses not found" });
     }
 
-    // Sort by amount
+    // Sorting by amount
     if (req.query.order === "increasing") {
       docs.sort((a, b) => +a.amount - +b.amount);
     } else if (req.query.order === "decreasing") {
