@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const mongoose_1 = __importDefault(require("mongoose"));
+const check_auth_1 = __importDefault(require("../middleware/check-auth"));
 const categories_1 = __importDefault(require("../models/categories"));
 const default_1 = __importDefault(require("../models/default"));
 const router = (0, express_1.Router)();
@@ -51,7 +52,7 @@ router.get("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
     }
 }));
 //Making post request to /categories
-router.post("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/", check_auth_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const category = new categories_1.default({
             _id: new mongoose_1.default.Types.ObjectId(),
@@ -107,7 +108,7 @@ router.get("/:categoriesId", (req, res, next) => __awaiter(void 0, void 0, void 
     }
 }));
 //Making patch request to /categories/(id that user provided)
-router.patch("/:categoriesId", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.patch("/:categoriesId", check_auth_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.categoriesId;
         const result = yield categories_1.default.updateOne({ _id: id }, { $set: { name: req.body.name } }).exec();
@@ -124,7 +125,7 @@ router.patch("/:categoriesId", (req, res, next) => __awaiter(void 0, void 0, voi
     }
 }));
 //Making delete request to /categories/(id that user provided)
-router.delete("/:categoriesId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.delete("/:categoriesId", check_auth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = req.params.categoriesId;
     try {
         let deletedCategory = yield categories_1.default.findByIdAndRemove({ _id: id })

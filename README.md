@@ -1,6 +1,6 @@
 # Project Title
 
-Personal finance app
+## Personal finance app
 
 ## Description
 
@@ -14,6 +14,74 @@ application includes search, filter, and sorting functionalities for expenses. U
 In this build I used Node.js, Express.js, Mongodb, Mongoose, Typecript, BcryptJs, JsonWebTokens, Nodemon, Morgan, Dotenv, bodyparser.
 
 ## API Reference
+
+### Sign up, Login and Reset
+
+### Important
+
+To create Categories or Expenses(you can get categories without logging in) you first need to sign up and then log in.
+After logging in you will get a token in response. Copy the token and in Headers paste it as shown below
+
+| Key             | Value               | Description                                       |
+| :-------------- | :------------------ | :------------------------------------------------ |
+| `Authorization` | `Bearer your-token` | Enter your copied token instead of the your-token |
+
+Example: Authorization Bearer QdDzUrTziEhVj57A3rxcjjn3aL_YNMZUh-hcqwRVDb4ZFMqoDEWxcyvpaS6xvmQot99CdHGOaaPdpv4f3ZKHB4
+
+#### Get all users
+
+```http
+  GET /user
+```
+
+#### Get(search) concrete user
+
+```http
+  GET /user/{id}
+```
+
+you need to provide the id of the user that you want to Get(search)
+
+#### For registration
+
+```http
+  POST /user/signup
+```
+
+| Parameter  | Type     | Description                       |
+| :--------- | :------- | :-------------------------------- |
+| `email`    | `string` | **Required**. Write your email    |
+| `password` | `string` | **Required**. Write your password |
+
+#### For Log in
+
+```http
+  POST /user/login
+```
+
+| Parameter  | Type     | Description                       |
+| :--------- | :------- | :-------------------------------- |
+| `email`    | `string` | **Required**. Write your email    |
+| `password` | `string` | **Required**. Write your password |
+
+#### For Reseting password
+
+```http
+  POST /user/reset-password
+```
+
+| Parameter  | Type     | Description                      |
+| :--------- | :------- | :------------------------------- |
+| `email`    | `string` | **Required**. Write your email   |
+| `password` | `string` | **Required**. Write new password |
+
+#### Delete concrete user
+
+```http
+  DELETE /user/{id}
+```
+
+you need to provide the id of the user that you want to delete
 
 ### Categories
 
@@ -120,63 +188,6 @@ you need to provide the id of the object that you want to Get(search)
   GET /expenses?order=(increasing or decreasing)
 
 ```
-
-### Sign up, Login and Reset
-
-#### Get all users
-
-```http
-  GET /user
-```
-
-#### Get(search) concrete user
-
-```http
-  GET /user/{id}
-```
-
-you need to provide the id of the user that you want to Get(search)
-
-#### For registration
-
-```http
-  POST /user/signup
-```
-
-| Parameter  | Type     | Description                       |
-| :--------- | :------- | :-------------------------------- |
-| `email`    | `string` | **Required**. Write your email    |
-| `password` | `string` | **Required**. Write your password |
-
-#### For Log in
-
-```http
-  POST /user/login
-```
-
-| Parameter  | Type     | Description                       |
-| :--------- | :------- | :-------------------------------- |
-| `email`    | `string` | **Required**. Write your email    |
-| `password` | `string` | **Required**. Write your password |
-
-#### For Reseting password
-
-```http
-  POST /user/reset-password
-```
-
-| Parameter  | Type     | Description                      |
-| :--------- | :------- | :------------------------------- |
-| `email`    | `string` | **Required**. Write your email   |
-| `password` | `string` | **Required**. Write new password |
-
-#### Delete concrete user
-
-```http
-  DELETE /user/{id}
-```
-
-you need to provide the id of the user that you want to delete
 
 ## How to install
 

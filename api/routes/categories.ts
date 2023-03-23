@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction, Router } from "express";
 import mongoose from "mongoose";
+import checkAuth from "../middleware/check-auth";
 
 import Category from "../models/categories";
 import Defaults from "../models/default";
@@ -45,30 +46,34 @@ router.get("/", async (req: Request, res: Response, next: NextFunction) => {
 });
 
 //Making post request to /categories
-router.post("/", async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const category = new Category({
-      _id: new mongoose.Types.ObjectId(),
-      name: req.body.name,
-    });
+router.post(
+  "/",
+  checkAuth,
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const category = new Category({
+        _id: new mongoose.Types.ObjectId(),
+        name: req.body.name,
+      });
 
-    const result = await category.save();
-    console.log(result);
+      const result = await category.save();
+      console.log(result);
 
-    res.status(201).json({
-      message: "Created category successfully",
-      createdCategory: {
-        name: result.name,
-        _id: result._id,
-      },
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({
-      error: err,
-    });
+      res.status(201).json({
+        message: "Created category successfully",
+        createdCategory: {
+          name: result.name,
+          _id: result._id,
+        },
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({
+        error: err,
+      });
+    }
   }
-});
+);
 
 //Making get request to /categories/(id that user provided) and Searching by ID
 router.get(
@@ -109,6 +114,7 @@ router.get(
 //Making patch request to /categories/(id that user provided)
 router.patch(
   "/:categoriesId",
+  checkAuth,
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const id = req.params.categoriesId;
@@ -130,35 +136,39 @@ router.patch(
 );
 
 //Making delete request to /categories/(id that user provided)
-router.delete("/:categoriesId", async (req: Request, res: Response) => {
-  const id = req.params.categoriesId;
+router.delete(
+  "/:categoriesId",
+  checkAuth,
+  async (req: Request, res: Response) => {
+    const id = req.params.categoriesId;
 
-  try {
-    let deletedCategory = await Category.findByIdAndRemove({ _id: id })
-      .select("name _id")
-      .exec();
+    try {
+      let deletedCategory = await Category.findByIdAndRemove({ _id: id })
+        .select("name _id")
+        .exec();
 
-    if (!deletedCategory) {
-      return res
-        .status(404)
-        .json({ message: "No valid entry found for provided ID" });
+      if (!deletedCategory) {
+        return res
+          .status(404)
+          .json({ message: "No valid entry found for provided ID" });
+      }
+      await Defaults.create({ name: deletedCategory?.name });
+
+      const { name } = deletedCategory;
+
+      const message = `${name} is moved to defaults`;
+
+      res.status(200).json({ message, deletedCategory });
+    } catch (err: Error | any) {
+      if (err.name === "CastError") {
+        return res
+          .status(404)
+          .json({ message: "No valid entry found for provided ID" });
+      }
+      console.log(err);
+      res.status(500).json({ error: err });
     }
-    await Defaults.create({ name: deletedCategory?.name });
-
-    const { name } = deletedCategory;
-
-    const message = `${name} is moved to defaults`;
-
-    res.status(200).json({ message, deletedCategory });
-  } catch (err: Error | any) {
-    if (err.name === "CastError") {
-      return res
-        .status(404)
-        .json({ message: "No valid entry found for provided ID" });
-    }
-    console.log(err);
-    res.status(500).json({ error: err });
   }
-});
+);
 
 export default router;

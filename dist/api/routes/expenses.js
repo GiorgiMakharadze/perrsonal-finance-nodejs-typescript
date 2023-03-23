@@ -14,12 +14,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const mongoose_1 = __importDefault(require("mongoose"));
+const check_auth_1 = __importDefault(require("../middleware/check-auth"));
 const categories_1 = __importDefault(require("../models/categories"));
 const expenses_1 = __importDefault(require("../models/expenses"));
 const default_1 = __importDefault(require("../models/default"));
 const router = (0, express_1.Router)();
 //Making get request to /expenses, filtering  and sorting responses
-router.get("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/", check_auth_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let query = {};
         const { category, type, amount, status, createdAt } = req.query;
@@ -43,7 +44,9 @@ router.get("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         if (createdAt) {
             query.createdAt = createdAt;
         }
-        const docs = yield expenses_1.default.find(query).populate("category", "name").exec();
+        const docs = yield expenses_1.default.find(query)
+            .populate("category", "name")
+            .exec();
         if (docs.length === 0) {
             return res.status(404).json({ error: "Expenses not found" });
         }
@@ -74,7 +77,7 @@ router.get("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
     }
 }));
 //Making post request to /expenses
-router.post("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/", check_auth_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { category, description, amount, status, type } = req.body;
         if (!category) {
@@ -136,7 +139,7 @@ router.post("/", (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     }
 }));
 //Making get request to /expenses/(id that user provides) and Searching by ID
-router.get("/:expenseId", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/:expenseId", check_auth_1.default, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const id = req.params.expenseId;
         const expense = yield expenses_1.default.findById(id)
