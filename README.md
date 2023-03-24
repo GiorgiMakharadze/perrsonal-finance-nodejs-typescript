@@ -141,6 +141,7 @@ you need to provide the id of the object that you want to Delete
 | `type`     | `string` | **Required**. Type of expense: income or outgoing            |
 | `amount`   | `number` | **Required**. Amount of income or outgoing                   |
 | `status`   | `string` | **Required**. Status of your expense:Processing or Completed |
+| `description`   | `string` | **Required**. Write your expense description |
 
 #### Get all expenses
 
