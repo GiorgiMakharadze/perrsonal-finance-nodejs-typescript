@@ -5,9 +5,9 @@
 ## Description
 
 This REST application is designed to provide users with a personal finances. It includes registration, authentication, and password recovery functionalities to ensure that user data is secure and protected.
-Users can create and manage personal finance categories. Users can create categories such as transport, food, education, a.c and rename them as desired. Additionally, they can delete categories, and all deleted entries from a category are moved to the defaults category.
-Users can add personal outgoing and income for themselves in one or more categories of their choice. If the category is not specified, the record is added to the default category. Each expense has a short description, amount, type(income or outgoing), status(Pending or Completed) and category.
-application includes search, filter, and sorting functionalities for expenses. Users can search for expenses, filter them based on income or outgoing expense, time period, amount, or status, and sort them  by amount, increasing or decreasing way.
+Users can create and manage personal finance categories. Users can create categories such as transport, food, education, a.c and rename them as desired. Additionally, they can delete categories, and all deleted categories are moved to the defaults category.
+Users can add personal expenses for themselves in one or more categories of their choice. If the category is not specified, the record is added to the default category. Each expense has a short description, amount, type(income or outgoing), status(Pending or Completed) and category.
+application includes search by id, filter, and sorting functionalities for expenses. Users can search for expenses, filter them based on income or outgoing expense, time period, amount, or status, and sort them  by amount, increasing or decreasing way.
 
 ## Used Technologies
 
