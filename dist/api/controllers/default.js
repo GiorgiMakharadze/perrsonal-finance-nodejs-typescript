@@ -27,17 +27,15 @@ const Defaults_get_all = (req, res, next) => __awaiter(void 0, void 0, void 0, f
                     description: doc.description,
                     amount: doc.amount,
                     status: doc.status,
-                    type: "default",
+                    type: doc.type,
                 };
             }),
         };
-        console.log(docs);
         res.status(200).json(response);
     }
-    catch (err) {
-        console.log(err);
+    catch (error) {
         res.status(500).json({
-            error: err,
+            error,
         });
     }
 });
@@ -48,7 +46,6 @@ const Defaults_get_default = (req, res, next) => __awaiter(void 0, void 0, void 
         const doc = yield default_1.default.findById(id)
             .select("name _id description amount status type")
             .exec();
-        console.log("from database", doc);
         if (doc) {
             res.status(200).json(doc);
         }
@@ -56,13 +53,12 @@ const Defaults_get_default = (req, res, next) => __awaiter(void 0, void 0, void 
             res.status(404).json({ message: "No valid entry found for provided ID" });
         }
     }
-    catch (err) {
-        if (err.name === "CastError") {
+    catch (error) {
+        if (error.name === "CastError") {
             res.status(404).json({ message: "No valid entry found for provided ID" });
         }
         else {
-            console.log(err);
-            res.status(500).json({ error: err });
+            res.status(500).json({ error });
         }
     }
 });

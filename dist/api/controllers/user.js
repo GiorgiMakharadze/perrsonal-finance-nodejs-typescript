@@ -27,13 +27,12 @@ const Users_get_all = (req, res, next) => __awaiter(void 0, void 0, void 0, func
             });
         }
         else {
-            res.status(404).json({ message: "Users not found" });
+            res.status(404).json({ error: "Users not found" });
         }
     }
-    catch (err) {
-        console.log(err);
+    catch (error) {
         res.status(500).json({
-            error: err,
+            error,
         });
     }
 });
@@ -51,8 +50,7 @@ const Users_get_user = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         });
     }
     catch (error) {
-        console.log(error);
-        res.status(500).json({ error: error });
+        res.status(500).json({ error });
     }
 });
 exports.Users_get_user = Users_get_user;
@@ -64,6 +62,16 @@ const Users_user_signup = (req, res, next) => __awaiter(void 0, void 0, void 0, 
                 message: "Mail exists",
             });
         }
+        else if (!req.body.email || !req.body.password) {
+            return res.status(400).json({
+                error: "You need to write your email and password",
+            });
+        }
+        else if (Object.keys(req.body).length > 2) {
+            return res.status(400).json({
+                error: "Please write only email and password.",
+            });
+        }
         else {
             const hash = yield bcrypt_1.default.hash(req.body.password, 10);
             const user = new user_1.default({
@@ -72,7 +80,6 @@ const Users_user_signup = (req, res, next) => __awaiter(void 0, void 0, void 0, 
                 password: hash,
             });
             const result = yield user.save();
-            console.log(result);
             res.status(201).json({
                 message: "User created",
                 _id: user._id,
@@ -80,26 +87,29 @@ const Users_user_signup = (req, res, next) => __awaiter(void 0, void 0, void 0, 
             });
         }
     }
-    catch (err) {
-        console.log(err);
+    catch (error) {
         res.status(500).json({
-            error: err,
+            error,
         });
     }
 });
 exports.Users_user_signup = Users_user_signup;
 const Users_user_login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("Request received: ", req.body);
     try {
         const user = yield user_1.default.findOne({ email: req.body.email }).exec();
-        console.log("User found: ", user);
         if (!user) {
             return res.status(401).json({
-                message: "Auth failed",
+                error: "Auth failed",
+            });
+        }
+        if (!req.body.email ||
+            !req.body.password ||
+            Object.keys(req.body).length > 2) {
+            return res.status(400).json({
+                error: "You need to write only your email and password",
             });
         }
         const result = yield bcrypt_1.default.compare(req.body.password, user.password);
-        console.log("Password compared: ", result);
         if (result) {
             if (!process.env.JWT_KEY) {
                 return res.status(500).json({
@@ -115,16 +125,16 @@ const Users_user_login = (req, res, next) => __awaiter(void 0, void 0, void 0, f
             return res.status(200).json({
                 message: "Auth successful",
                 token: token,
+                _id: user._id,
             });
         }
         return res.status(401).json({
-            message: "Auth failed",
+            error: "Auth failed",
         });
     }
-    catch (err) {
-        console.log(err);
+    catch (error) {
         res.status(500).json({
-            error: err,
+            error,
         });
     }
 });
@@ -134,28 +144,32 @@ const Users_reset_password = (req, res, next) => __awaiter(void 0, void 0, void 
         const user = yield user_1.default.findOne({ email: req.body.email }).exec();
         if (!user) {
             return res.status(404).json({
-                message: "User not found",
+                error: "User not found",
             });
         }
         const newPassword = req.body.password;
         if (!newPassword) {
             return res.status(500).json({
-                message: "Please write your new password.",
+                error: "Please write your new password.",
+            });
+        }
+        else if (Object.keys(req.body).length > 2) {
+            return res.status(400).json({
+                error: "Please write only email and password.",
             });
         }
         const hash = yield bcrypt_1.default.hash(newPassword, 10);
         user.password = hash;
         const result = yield user.save();
-        console.log(result);
         res.status(200).json({
             message: "Password reset successful",
             newPassword: newPassword,
+            _id: result._id,
         });
     }
-    catch (err) {
-        console.log(err);
+    catch (error) {
         res.status(500).json({
-            error: err,
+            error,
         });
     }
 });
@@ -165,14 +179,18 @@ const Users_delete_user = (req, res, next) => __awaiter(void 0, void 0, void 0, 
         const result = yield user_1.default.findByIdAndRemove({
             _id: req.params.userId,
         }).exec();
+        if (!result) {
+            return res.status(404).json({
+                error: "No valid entry found for provided ID",
+            });
+        }
         res.status(200).json({
             message: "User deleted",
         });
     }
-    catch (err) {
-        console.log(err);
+    catch (error) {
         res.status(500).json({
-            error: err,
+            error,
         });
     }
 });

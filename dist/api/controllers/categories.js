@@ -41,22 +41,31 @@ const Categories_get_all = (req, res, next) => __awaiter(void 0, void 0, void 0,
         };
         res.status(200).json(response);
     }
-    catch (err) {
-        console.log(err);
+    catch (error) {
         res.status(500).json({
-            error: err,
+            error,
         });
     }
 });
 exports.Categories_get_all = Categories_get_all;
 const Categories_create_category = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const categoryName = yield categories_1.default.findOne({ name: req.body.name });
+        if (Object.keys(req.body).length !== 1 || !req.body.name) {
+            return res.status(400).json({
+                error: "Please provide only the category name",
+            });
+        }
+        else if (categoryName) {
+            return res.status(400).json({
+                error: "Category with the same name already exists",
+            });
+        }
         const category = new categories_1.default({
             _id: new mongoose_1.default.Types.ObjectId(),
             name: req.body.name,
         });
         const result = yield category.save();
-        console.log(result);
         res.status(201).json({
             message: "Created category successfully",
             createdCategory: {
@@ -65,10 +74,9 @@ const Categories_create_category = (req, res, next) => __awaiter(void 0, void 0,
             },
         });
     }
-    catch (err) {
-        console.log(err);
+    catch (error) {
         res.status(500).json({
-            error: err,
+            error,
         });
     }
 });
@@ -87,33 +95,46 @@ const Categories_get_category = (req, res, next) => __awaiter(void 0, void 0, vo
             res.status(200).json(doc);
         }
         else {
-            res.status(404).json({ message: "No valid entry found for provided ID" });
+            res.status(404).json({ error: "No valid entry found for provided ID" });
         }
     }
-    catch (err) {
-        if (err.name === "CastError") {
-            res.status(404).json({ message: "No valid entry found for provided ID" });
+    catch (error) {
+        if (error.name === "CastError") {
+            res.status(404).json({ error: "No valid entry found for provided ID" });
         }
         else {
-            console.log(err);
-            res.status(500).json({ error: err });
+            res.status(500).json({ error });
         }
     }
 });
 exports.Categories_get_category = Categories_get_category;
 const Categories_change_category = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const categoryName = yield categories_1.default.findOne({ name: req.body.name });
+        if (Object.keys(req.body).length !== 1 || !req.body.name) {
+            return res.status(400).json({
+                error: "Please provide only the category name",
+            });
+        }
+        else if (categoryName) {
+            return res.status(400).json({
+                error: "Your  new category name can't be the same as your old category name ",
+            });
+        }
         const id = req.params.categoriesId;
+        if (!mongoose_1.default.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                error: "No valid entry found for provided ID",
+            });
+        }
         const result = yield categories_1.default.updateOne({ _id: id }, { $set: { name: req.body.name } }).exec();
-        console.log(result);
         res.status(200).json({
             message: "Category updated",
         });
     }
-    catch (err) {
-        console.log(err);
+    catch (error) {
         res.status(500).json({
-            error: err,
+            error,
         });
     }
 });
@@ -127,21 +148,20 @@ const Categories_delete_category = (req, res) => __awaiter(void 0, void 0, void 
         if (!deletedCategory) {
             return res
                 .status(404)
-                .json({ message: "No valid entry found for provided ID" });
+                .json({ error: "No valid entry found for provided ID" });
         }
         yield default_1.default.create({ name: deletedCategory === null || deletedCategory === void 0 ? void 0 : deletedCategory.name });
         const { name } = deletedCategory;
         const message = `${name} is moved to defaults`;
         res.status(200).json({ message, deletedCategory });
     }
-    catch (err) {
-        if (err.name === "CastError") {
+    catch (error) {
+        if (error.name === "CastError") {
             return res
                 .status(404)
-                .json({ message: "No valid entry found for provided ID" });
+                .json({ error: "No valid entry found for provided ID" });
         }
-        console.log(err);
-        res.status(500).json({ error: err });
+        res.status(500).json({ error });
     }
 });
 exports.Categories_delete_category = Categories_delete_category;

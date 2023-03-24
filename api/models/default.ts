@@ -7,6 +7,7 @@ export interface IDefault extends Document {
   type: string;
   amount: number;
   status: string;
+  createdAt: Date;
 }
 
 const defaultsSchema: Schema = new Schema({

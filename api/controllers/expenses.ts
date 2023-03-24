@@ -38,8 +38,8 @@ export const Expenses_get_all = async (
     if (createdAt) {
       query.createdAt = createdAt;
     }
-
     const docs = await Expense.find(query).populate("category", "name").exec();
+
     if (docs.length === 0) {
       return res.status(404).json({ error: "Expenses not found" });
     }
@@ -58,15 +58,25 @@ export const Expenses_get_all = async (
           type: doc.type,
           amount: doc.amount,
           status: doc.status,
+          description: doc.description,
+          createdAt: doc.createdAt,
+          _id: doc._id,
+        };
+      }),
+      defaults: docs.map((doc) => {
+        return {
+          type: doc.type,
+          amount: doc.amount,
+          status: doc.status,
+          description: doc.description,
           createdAt: doc.createdAt,
           _id: doc._id,
         };
       }),
     };
     res.status(200).json({ response });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: err });
+  } catch (error) {
+    res.status(500).json({ error });
   }
 };
 
@@ -76,6 +86,15 @@ export const Expenses_create_expense = async (
   next: NextFunction
 ) => {
   try {
+    const requiredFields = ["amount", "description", "type"];
+    const providedFields = Object.keys(req.body);
+
+    if (!requiredFields.every((field) => providedFields.includes(field))) {
+      return res.status(400).json({
+        error: "Please provide all the required fields",
+      });
+    }
+
     const { category, description, amount, status, type } = req.body;
     if (!category) {
       const defaultExpense = new Default({
@@ -96,10 +115,10 @@ export const Expenses_create_expense = async (
           "You have not selected a category, so this expense has been defaulted",
         defaultExpense: {
           _id: result._id,
-          description: result.description,
-          amount: result.amount,
-          type: result.type,
-          status: result.status,
+          description,
+          amount,
+          type,
+          status,
         },
       });
     } else {
@@ -113,7 +132,6 @@ export const Expenses_create_expense = async (
         description,
         type,
         amount,
-        date: req.body.date,
         status,
       });
 
@@ -125,18 +143,17 @@ export const Expenses_create_expense = async (
       res.status(201).json({
         message: "Expense created successfully",
         expense: {
-          category: category,
-          type: result.type,
-          description: result.description,
-          amount: result.amount,
-          status: result.status,
+          category,
+          type,
+          description,
+          amount,
+          status,
           _id: result._id,
         },
       });
     }
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: err });
+  } catch (error) {
+    res.status(500).json({ error });
   }
 };
 
@@ -159,10 +176,10 @@ export const Expenses_get_expense = async (
       description: expense.description,
       amount: expense.amount,
       status: expense.status,
+      createdAt: expense.createdAt,
       _id: expense._id,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: error });
+    res.status(500).json({ error });
   }
 };

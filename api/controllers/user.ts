@@ -18,12 +18,11 @@ export const Users_get_all = async (
         users: users,
       });
     } else {
-      res.status(404).json({ message: "Users not found" });
+      res.status(404).json({ error: "Users not found" });
     }
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
     res.status(500).json({
-      error: err,
+      error,
     });
   }
 };
@@ -44,8 +43,7 @@ export const Users_get_user = async (
       _id: user._id,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ error: error });
+    res.status(500).json({ error });
   }
 };
 
@@ -60,6 +58,14 @@ export const Users_user_signup = async (
       return res.status(409).json({
         message: "Mail exists",
       });
+    } else if (!req.body.email || !req.body.password) {
+      return res.status(400).json({
+        error: "You need to write your email and password",
+      });
+    } else if (Object.keys(req.body).length > 2) {
+      return res.status(400).json({
+        error: "Please write only email and password.",
+      });
     } else {
       const hash = await bcrypt.hash(req.body.password, 10);
       const user = new User({
@@ -68,17 +74,15 @@ export const Users_user_signup = async (
         password: hash,
       });
       const result = await user.save();
-      console.log(result);
       res.status(201).json({
         message: "User created",
         _id: user._id,
         email: user.email,
       });
     }
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
     res.status(500).json({
-      error: err,
+      error,
     });
   }
 };
@@ -88,19 +92,24 @@ export const Users_user_login = async (
   res: Response,
   next: NextFunction
 ) => {
-  console.log("Request received: ", req.body);
-
   try {
     const user = await User.findOne({ email: req.body.email }).exec();
-    console.log("User found: ", user);
 
     if (!user) {
       return res.status(401).json({
-        message: "Auth failed",
+        error: "Auth failed",
+      });
+    }
+    if (
+      !req.body.email ||
+      !req.body.password ||
+      Object.keys(req.body).length > 2
+    ) {
+      return res.status(400).json({
+        error: "You need to write only your email and password",
       });
     }
     const result = await bcrypt.compare(req.body.password, user.password);
-    console.log("Password compared: ", result);
 
     if (result) {
       if (!process.env.JWT_KEY) {
@@ -121,15 +130,15 @@ export const Users_user_login = async (
       return res.status(200).json({
         message: "Auth successful",
         token: token,
+        _id: user._id,
       });
     }
     return res.status(401).json({
-      message: "Auth failed",
+      error: "Auth failed",
     });
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
     res.status(500).json({
-      error: err,
+      error,
     });
   }
 };
@@ -143,27 +152,31 @@ export const Users_reset_password = async (
     const user = await User.findOne({ email: req.body.email }).exec();
     if (!user) {
       return res.status(404).json({
-        message: "User not found",
+        error: "User not found",
       });
     }
     const newPassword = req.body.password;
     if (!newPassword) {
       return res.status(500).json({
-        message: "Please write your new password.",
+        error: "Please write your new password.",
+      });
+    } else if (Object.keys(req.body).length > 2) {
+      return res.status(400).json({
+        error: "Please write only email and password.",
       });
     }
+
     const hash = await bcrypt.hash(newPassword, 10);
     user.password = hash;
     const result = await user.save();
-    console.log(result);
     res.status(200).json({
       message: "Password reset successful",
       newPassword: newPassword,
+      _id: result._id,
     });
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
     res.status(500).json({
-      error: err,
+      error,
     });
   }
 };
@@ -177,13 +190,17 @@ export const Users_delete_user = async (
     const result = await User.findByIdAndRemove({
       _id: req.params.userId,
     }).exec();
+    if (!result) {
+      return res.status(404).json({
+        error: "No valid entry found for provided ID",
+      });
+    }
     res.status(200).json({
       message: "User deleted",
     });
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
     res.status(500).json({
-      error: err,
+      error,
     });
   }
 };

@@ -18,14 +18,13 @@ function default_1(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
-            console.log(token);
             const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_KEY);
             req.userData = decoded;
             next();
         }
         catch (error) {
             return res.status(401).json({
-                message: "Auth failed! Log in to continue",
+                error: "Auth failed! Log in to continue",
             });
         }
     });

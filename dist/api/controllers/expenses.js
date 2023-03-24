@@ -59,6 +59,17 @@ const Expenses_get_all = (req, res, next) => __awaiter(void 0, void 0, void 0, f
                     type: doc.type,
                     amount: doc.amount,
                     status: doc.status,
+                    description: doc.description,
+                    createdAt: doc.createdAt,
+                    _id: doc._id,
+                };
+            }),
+            defaults: docs.map((doc) => {
+                return {
+                    type: doc.type,
+                    amount: doc.amount,
+                    status: doc.status,
+                    description: doc.description,
                     createdAt: doc.createdAt,
                     _id: doc._id,
                 };
@@ -66,14 +77,20 @@ const Expenses_get_all = (req, res, next) => __awaiter(void 0, void 0, void 0, f
         };
         res.status(200).json({ response });
     }
-    catch (err) {
-        console.log(err);
-        res.status(500).json({ error: err });
+    catch (error) {
+        res.status(500).json({ error });
     }
 });
 exports.Expenses_get_all = Expenses_get_all;
 const Expenses_create_expense = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const requiredFields = ["amount", "description", "type"];
+        const providedFields = Object.keys(req.body);
+        if (!requiredFields.every((field) => providedFields.includes(field))) {
+            return res.status(400).json({
+                error: "Please provide all the required fields",
+            });
+        }
         const { category, description, amount, status, type } = req.body;
         if (!category) {
             const defaultExpense = new default_1.default({
@@ -91,10 +108,10 @@ const Expenses_create_expense = (req, res, next) => __awaiter(void 0, void 0, vo
                 message: "You have not selected a category, so this expense has been defaulted",
                 defaultExpense: {
                     _id: result._id,
-                    description: result.description,
-                    amount: result.amount,
-                    type: result.type,
-                    status: result.status,
+                    description,
+                    amount,
+                    type,
+                    status,
                 },
             });
         }
@@ -108,7 +125,6 @@ const Expenses_create_expense = (req, res, next) => __awaiter(void 0, void 0, vo
                 description,
                 type,
                 amount,
-                date: req.body.date,
                 status,
             });
             if (expense.type === "outgoing" && !expense.status) {
@@ -118,19 +134,18 @@ const Expenses_create_expense = (req, res, next) => __awaiter(void 0, void 0, vo
             res.status(201).json({
                 message: "Expense created successfully",
                 expense: {
-                    category: category,
-                    type: result.type,
-                    description: result.description,
-                    amount: result.amount,
-                    status: result.status,
+                    category,
+                    type,
+                    description,
+                    amount,
+                    status,
                     _id: result._id,
                 },
             });
         }
     }
-    catch (err) {
-        console.log(err);
-        res.status(500).json({ error: err });
+    catch (error) {
+        res.status(500).json({ error });
     }
 });
 exports.Expenses_create_expense = Expenses_create_expense;
@@ -149,12 +164,12 @@ const Expenses_get_expense = (req, res, next) => __awaiter(void 0, void 0, void 
             description: expense.description,
             amount: expense.amount,
             status: expense.status,
+            createdAt: expense.createdAt,
             _id: expense._id,
         });
     }
     catch (error) {
-        console.log(error);
-        res.status(500).json({ error: error });
+        res.status(500).json({ error });
     }
 });
 exports.Expenses_get_expense = Expenses_get_expense;
