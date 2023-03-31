@@ -16,9 +16,10 @@ In this build I used Node.js, Express.js, Mongodb, Mongoose, Typecript, BcryptJs
 
 ## How to install
 
-Download and run npm install and then in terminal run npm run dev. Now you can make requests to that API.
+Download and run npm install.
 Then First you need to create .env file in root directory. Create there Variable MONGO_ATLAS=mongodb+srv://giorgi:giorgi12344321@clustersweeft.zi9vxpj.mongodb.net/?retryWrites=true&w=majority
 Create second Variable in .env file JWT_KEY=AdZp0Wafahgqp56PI9Dnqs73fX9WZsFarHas345a8b-WxTMkvIVeQPEyz0 
+Lastly in terminal run npm run dev. Now you can make requests to that API.
 
 
 ## API Reference
