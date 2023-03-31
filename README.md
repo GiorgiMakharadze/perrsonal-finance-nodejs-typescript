@@ -13,6 +13,14 @@ application includes search by id, filter, and sorting functionalities for expen
 
 In this build I used Node.js, Express.js, Mongodb, Mongoose, Typecript, BcryptJs, JsonWebTokens, Nodemon, Morgan, Dotenv, bodyparser.
 
+
+## How to install
+
+Download and run npm install and then in terminal run npm run dev. Now you can make requests to that API.
+Then First you need to create .env file in root directory. Create there Variable MONGO_ATLAS=mongodb+srv://giorgi:giorgi12344321@clustersweeft.zi9vxpj.mongodb.net/?retryWrites=true&w=majority
+Create second Variable in .env file JWT_KEY=AdZp0Wafahgqp56PI9Dnqs73fX9WZsFarHas345a8b-WxTMkvIVeQPEyz0 
+
+
 ## API Reference
 
 ### Sign up, Login and Reset
@@ -190,6 +198,3 @@ you need to provide the id of the object that you want to Get(search)
 
 ```
 
-## How to install
-
-Download and run npm install and then in terminal run npm run dev. Now you can make requests to that API
